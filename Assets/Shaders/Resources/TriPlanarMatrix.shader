@@ -18,7 +18,12 @@
              #pragma vertex   vert
              #pragma fragment frag
              #include "UnityCG.cginc"
-             
+             #define vec2 float2
+            #define vec3 float3
+            #define vec4 float4
+            #define time _Time.g
+            #define fract frac
+
              struct appdata
              {
                  float4 vertex : POSITION;
@@ -53,6 +58,44 @@
              sampler2D global_font_texture;
              uint      global_colored;
               //---------------------------------------------------------
+
+              //==========================
+              float length2(vec2 p) { return dot(p, p); }
+
+                float noise(vec2 p){
+                    return fract(sin(fract(sin(p.x) * (45.0)) + p.y) * 30.0);
+                }
+
+                float worley(vec2 p) {
+                    float d = 1e30;
+                    for (int xo = -1; xo <= 1; ++xo) {
+                        for (int yo = -1; yo <= 1; ++yo) {
+                            vec2 tp = floor(p) + vec2(xo, yo);
+                            d = min(d, length2(p - tp - vec2(noise(tp),noise(tp))));
+                        }
+                    }
+                    return 3.0*exp(-3.0*abs(2.0*d - 1.0));
+                }
+
+                float fworley(vec2 p) {
+                    return sqrt(sqrt(sqrt(
+                        1.1 * // light
+                        worley(p*5. + .3 + time*.0525) *
+                        sqrt(worley(p * 50. + 0.3 + time * -0.15)) *
+                        sqrt(sqrt(worley(p * -10. + 9.3))))));
+                }
+
+                float3 mainimage(float2 fragCoord)
+                {
+                    vec2 uv =normalize( fragCoord);
+                    float t = fworley(uv);
+                    t *= exp(-length2(abs(0.7*uv - 1.0)));
+                   return float3(t * vec3(0.1, 1.5*t, 1.2*t + pow(t, 0.5-t)));
+                    
+                }
+
+              //==========================
+
              
              float text(float2 coord)
              {
@@ -118,9 +161,11 @@
              float3      col = float3(0., 0., 0.);
              float3 rain_col = rain(coord* float2(dropLength, dropLength)*scale);
              
-             if (global_colored == 1)
-                 rain_col = rain_colored(coord * float2(dropLength, dropLength)*scale);
+             // if (global_colored == 1)
+             //     rain_col = rain_colored(coord * float2(dropLength, dropLength)*scale);
              return                 text(coord * float2(dropLength, dropLength)*scale) *rain_col;
+             //这里可以替换成任意颜色
+             // return                 mainimage(coord * float2(dropLength, dropLength)*scale) ;
          }
          
          float     _Global_Transition_value;
