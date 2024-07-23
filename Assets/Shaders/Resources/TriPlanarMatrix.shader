@@ -94,6 +94,63 @@
                     
                 }
 
+                float random (half2 st) {
+                    return frac(sin(dot(st.xy,half2(12.9898,78.233)))*43758.5453123);
+                }
+
+                vec4 mainImage2(in vec2 fragCoord )
+                {
+                    vec2 iResolution=vec2(100.0,100.0);
+                    vec2 spiralCenter = iResolution.xy / 2.0;
+                    float abstandSpiralCenter = distance(fragCoord, spiralCenter);
+                    float abstandSpiralCenterNorm = abstandSpiralCenter / length(iResolution.xy / 2.0);
+    
+                    float winkel = sqrt(abstandSpiralCenterNorm) * 10.0 * sin(_Time * .17)   + _Time * .61;
+                    vec2 vergleichspunkt = spiralCenter + abstandSpiralCenter * vec2(sin(winkel), cos(winkel));
+                    float abstandVergleichspunkt = distance(fragCoord, vergleichspunkt);
+                    float abstandVergleichspunktNorm = abstandVergleichspunkt / length(iResolution.xy / 2.0);
+                    float subtrahend = abstandVergleichspunktNorm / abstandSpiralCenterNorm;
+
+                    float winkel2 = sqrt(abstandSpiralCenterNorm) * 10.0 * sin(_Time * .23 + .1)   + _Time * .31;
+                    vec2 vergleichspunkt2 = spiralCenter + abstandSpiralCenter * vec2(sin(winkel2), cos(winkel2));
+                    float abstandVergleichspunkt2 = distance(fragCoord, vergleichspunkt2);
+                    float abstandVergleichspunktNorm2 = abstandVergleichspunkt2 / length(iResolution.xy / 2.0);
+                    float subtrahend2 = abstandVergleichspunktNorm2 / abstandSpiralCenterNorm;
+
+                    float winkel3 = sqrt(abstandSpiralCenterNorm) * 10.0 * sin(_Time * .41 + .62)   + _Time * .47;
+                    vec2 vergleichspunkt3 = spiralCenter + abstandSpiralCenter * vec2(sin(winkel3), cos(winkel3));
+                    float abstandVergleichspunkt3 = distance(fragCoord, vergleichspunkt3);
+                    float abstandVergleichspunktNorm3 = abstandVergleichspunkt3 / length(iResolution.xy / 2.0);
+                    float subtrahend3 = abstandVergleichspunktNorm3 / abstandSpiralCenterNorm;
+
+                    float winkel4 = sqrt(abstandSpiralCenterNorm) * 10.0 * sin(_Time * .38 + .17)   + _Time * .85;
+                    vec2 vergleichspunkt4 = spiralCenter + abstandSpiralCenter * vec2(sin(winkel4), cos(winkel4));
+                    float abstandVergleichspunkt4 = distance(fragCoord, vergleichspunkt4);
+                    float abstandVergleichspunktNorm4 = abstandVergleichspunkt4 / length(iResolution.xy / 2.0);
+                    float subtrahend4 = abstandVergleichspunktNorm4 / abstandSpiralCenterNorm;
+
+                    float winkel5 = sqrt(abstandSpiralCenterNorm) * 10.0 * sin(_Time * .48 + .95)   + _Time * .57;
+                    vec2 vergleichspunkt5 = spiralCenter + abstandSpiralCenter * vec2(sin(winkel5), cos(winkel5));
+                    float abstandVergleichspunkt5 = distance(fragCoord, vergleichspunkt5);
+                    float abstandVergleichspunktNorm5 = abstandVergleichspunkt5 / length(iResolution.xy / 2.0);
+                    float subtrahend5 = abstandVergleichspunktNorm5 / abstandSpiralCenterNorm;
+
+                    float winkel6 = sqrt(abstandSpiralCenterNorm) * 10.0 * sin(_Time * .29 + .27)   + _Time * .54;
+                    vec2 vergleichspunkt6 = spiralCenter + abstandSpiralCenter * vec2(sin(winkel6), cos(winkel6));
+                    float abstandVergleichspunkt6 = distance(fragCoord, vergleichspunkt6);
+                    float abstandVergleichspunktNorm6 = abstandVergleichspunkt6 / length(iResolution.xy / 2.0);
+                    float subtrahend6 = abstandVergleichspunktNorm6 / abstandSpiralCenterNorm;
+
+                    vec3 fragColor1 = vec3(2.0 - abstandVergleichspunktNorm - abstandVergleichspunktNorm4 - abstandVergleichspunktNorm6, 2.0 - abstandVergleichspunktNorm2 - abstandVergleichspunktNorm5 - abstandVergleichspunktNorm4, 2.0 - abstandVergleichspunktNorm3 - abstandVergleichspunktNorm6 - abstandVergleichspunktNorm5);
+                    vec3 fragColor2 = vec3(4.0 - subtrahend - subtrahend4 - subtrahend6, 4.0 - subtrahend2 - subtrahend5 - subtrahend4, 4.0 - subtrahend3 - subtrahend6 - subtrahend5);
+                    float faktor = tex2D(global_font_texture,vec2(0,0)).x;
+                    faktor = pow(faktor, 5.0);
+    
+                    // Output to screen
+                    return vec4(lerp(fragColor1, fragColor2, faktor), 1.0);
+                    //fragColor = vec4(fragColor1, 1.0);
+                }
+
               //==========================
 
              
@@ -125,7 +182,9 @@
                float y      = frac((fragCoord.y / dropLength)      // This maps the screen again so that top is 1 and button is 0. The addition with time and frac would cause an entire bar moving from button to top
                                 + _Time.y * speed + offset);       // the speed and offset would cause the columns to move down at different speeds. Which causes the rain drop effect
                
-               return float3(.1, 1., .35) / (y*20.);               // adjusting the retun color based on the columns calculations. 
+               // return float3(.1, 1., .35) / (y*20.);               // adjusting the retun color based on the columns calculations. 
+               //这个彩色好看点
+                return float3(random(float2(offset,offset)),random(float2(offset,offset)*y),random(float2(offset,offset)*speed)) / (y*5.);
          }
 
            //---------------------------------------------------------
@@ -165,7 +224,7 @@
              //     rain_col = rain_colored(coord * float2(dropLength, dropLength)*scale);
              return                 text(coord * float2(dropLength, dropLength)*scale) *rain_col;
              //这里可以替换成任意颜色
-             // return                 mainimage(coord * float2(dropLength, dropLength)*scale) ;
+             // return                 mainImage2(coord * float2(dropLength, dropLength)*scale) ;
          }
          
          float     _Global_Transition_value;

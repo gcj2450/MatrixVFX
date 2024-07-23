@@ -8,6 +8,7 @@ public class TriplanarManager : MonoBehaviour
     // _____________________________________________
     // Public
     public Texture font_texture;
+    public Texture NoiseTexture;
     public ComputeShader white_noise_generator;
     public bool colored;
     // _____________________________________________

@@ -134,6 +134,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: LOW_POLY_TEXTURED (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: 2d603d5823217024390c056dd287bd34, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 2d603d5823217024390c056dd287bd34, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -365,9 +369,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   font_texture: {fileID: 2800000, guid: 2c44b70487211cf40bbcbe7e376cef77, type: 3}
+  NoiseTexture: {fileID: 2800000, guid: 1ec719ae4d6e0934bb77ec0d5eca7fe3, type: 3}
   white_noise_generator: {fileID: 7200000, guid: 0a27ec98d7fce6b4f8f66fc10aaeda48,
     type: 3}
-  colored: 0
+  colored: 1
 --- !u!4 &718819782
 Transform:
   m_ObjectHideFlags: 0

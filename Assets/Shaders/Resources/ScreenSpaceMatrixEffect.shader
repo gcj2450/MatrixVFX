@@ -40,6 +40,24 @@
                       
                       return o;
                   }
+
+                  //================================
+                  float random (half2 st) {
+                        return frac(sin(dot(st.xy,half2(12.9898,78.233)))*43758.5453123);
+                    }
+                    float3 rain2(float2 fragCoord)
+                    {
+	                    fragCoord.x -= fmod(fragCoord.x, 16.);
+                        //fragCoord.y -= mod(fragCoord.y, 16.);
+    
+                        float offset=sin(fragCoord.x*15.);
+                        float speed=cos(fragCoord.x*3.)*.3+.7;
+   
+                        float y = frac(fragCoord.y + _Time*speed + offset);
+                        return float3(random(float2(offset,offset)),random(float2(offset,offset)*y),random(float2(offset,offset)*speed)) / (y*5.);
+                    }
+
+                  //================================
                   
                   //---------------------------------------------------------
                   
@@ -72,6 +90,11 @@
                          
                          return float3(.1, 1., .35) / (y*20.);               // adjusting the retun color based on the columns calculations. 
                   }
+
+                  float4 mainImage(in float2 fragCoord )
+                    {
+                        return float4(text(fragCoord)*rain2(fragCoord),1.0);
+                    }
                   
                   //---------------------------------------------------------
 #define scale 0.6
@@ -79,7 +102,8 @@
                   {
                           // sample the texture
                           fixed4 col     = float4(0.,0.,0.,1.);
-                                 col.xyz = text(i.uv * float2(_screen_width, _screen_height)*scale)*rain(i.uv * float2(_screen_width, _screen_height)*scale);
+                          fixed2 uv=i.uv * float2(_screen_width, _screen_height)*scale;
+                                 col.xyz = text(uv)*rain(uv);
                           return col;
                   }
                   ENDCG
